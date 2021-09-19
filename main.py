@@ -1,0 +1,17 @@
+from fastapi import FastAPI
+from recipe_scraper import get_recipe
+
+
+app = FastAPI()
+
+
+@app.get("/")
+def read_main():
+    return {"message": "Hello World"}
+
+@app.get("/r/u={url:path}")
+def recipe(url: str):
+    recipe = get_recipe(url)
+    if recipe is None:
+      recipe = {"recipe": []}
+    return recipe

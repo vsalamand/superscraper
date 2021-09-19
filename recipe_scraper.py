@@ -1,0 +1,122 @@
+"""Fetch structured JSON-LD OR MICRODATA data from a given URL."""
+from typing import Optional, List
+import pandas as pd
+import numpy as np
+import requests
+import extruct
+import pprint
+from w3lib.html import get_base_url
+from trafilatura import fetch_url, extract
+import trafilatura
+from nltk.tokenize import sent_tokenize
+
+from ml import get_ingredients
+
+
+
+# method to extract structured data
+
+def get_recipe(url: str) -> Optional[List[dict]]:
+    """Parse structured data from a URL. JSON-lD / MICRODATA"""
+    metadata = get_metadata(url)
+    if metadata:
+      recipe_df = get_recipe_df(metadata)
+      if recipe_df is not None:
+          recipe = {"recipe": {
+                       "name": recipe_df.name.values[0],
+                       "yield": get_servings(recipe_df.recipeYield.values[0]),
+                       "ingredients": get_ingredients(recipe_df.recipeIngredient.values[0])
+                      }
+                  }
+          return recipe
+
+    """Parse unstructured data from a URL."""
+    downloaded = fetch_url(url)
+    # to get the main text of a page
+    if downloaded is not None:
+        result = extract(downloaded, include_comments=False)
+        text = sentence_parser(result)
+        if text is not None:
+            recipe = {"recipe": {
+                     "name": get_title(downloaded),
+                     "yield": None,
+                     "ingredients": get_ingredients(text)
+                    }
+                }
+            return recipe
+
+    """If nothing was parsed correctly"""
+    return None
+
+
+
+def get_metadata(url: str):
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '3600',
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+    }
+    r = requests.get(url, headers=headers)
+
+    """Fetch JSON-LD & Microdata structured data."""
+    metadata = extruct.extract(
+        r.text,
+        base_url = get_base_url(r.text, r.url),
+        syntaxes=['json-ld', 'microdata'],
+        uniform=True
+    )
+    if metadata.get('json-ld'):
+      metadata = metadata['json-ld']
+    else:
+      metadata = metadata['microdata']
+
+    if bool(metadata) and isinstance(metadata, list):
+        metadata = metadata[0]
+
+    return metadata
+
+def get_recipe_df(metadata):
+    #check metadata dict format
+    if '@graph' in metadata:
+        recipe_df = pd.DataFrame(metadata['@graph'])
+    else:
+        recipe_df = pd.DataFrame.from_dict(metadata, orient='index').transpose()
+
+    try:
+      #get first row with recipeIngredient
+      recipe_df = recipe_df.sort_values(by='recipeIngredient').head(1)
+      return recipe_df
+    except:
+      return None
+
+
+
+def get_servings(value):
+  if type(value) == list:
+    return max(value)
+  else:
+    return value
+
+
+
+def sentence_parser(result):
+    # getting all the paragraphs
+    text = []
+    try:
+        sentences = sent_tokenize(result, language='french')
+        for sentence in sentences:
+            if (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
+                [text.append(x) for x in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+            else:
+                [text.append(x) for x in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')]
+
+        # remove empty strings from list
+        return list(filter(None, text))
+    except:
+        return None
+
+
+def get_title(downloaded):
+    return trafilatura.bare_extraction(downloaded)['title']

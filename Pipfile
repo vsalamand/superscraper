@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+spacy = "*"
+pydantic = "*"
+fastapi = "*"
+uvicorn = "*"
+pandas = "*"
+numpy = "*"
+spacy-transformers = "*"
+extruct = "*"
+trafilatura = "*"
+nltk = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
