@@ -14,6 +14,7 @@ spacy-transformers = "*"
 extruct = "*"
 trafilatura = "*"
 nltk = "*"
+torch = {version = "==1.8.1", index = "pytorch"}
 
 [dev-packages]
 
