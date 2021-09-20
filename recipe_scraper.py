@@ -10,7 +10,7 @@ from trafilatura import fetch_url, extract
 import trafilatura
 from nltk.tokenize import sent_tokenize
 
-from ml import get_ingredients
+from classifier import get_ingredients
 
 
 
