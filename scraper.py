@@ -107,7 +107,10 @@ def sentence_parser(result):
     try:
         sentences = sent_tokenize(result, language='french')
         for sentence in sentences:
-            if (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
+            if (sentence.replace(",","* ").count('*') > 4):
+                [text.append(x) for x in sentence.replace(",","* ").replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+            elif (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
+                print(sentence)
                 [text.append(x) for x in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
             else:
                 [text.append(x) for x in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')]
