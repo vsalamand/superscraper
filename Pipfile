@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu/torch_stable.html"
+verify_ssl = false
+
 [packages]
 spacy = "*"
 pydantic = "*"
@@ -14,7 +19,6 @@ spacy-transformers = "*"
 extruct = "*"
 trafilatura = "*"
 nltk = "*"
-torch = {version = "==1.8.1", index = "pytorch"}
 
 [dev-packages]
 
