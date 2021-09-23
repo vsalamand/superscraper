@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from recipe_scraper import get_recipe
+from scraper import get_recipe
 
 
 app = FastAPI()

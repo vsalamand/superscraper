@@ -5,12 +5,13 @@ import numpy as np
 import requests
 import extruct
 import pprint
+import html
 from w3lib.html import get_base_url
 from trafilatura import fetch_url, extract
 import trafilatura
 from nltk.tokenize import sent_tokenize
 
-from ml import get_ingredients
+from classifier import get_ingredients
 
 
 
@@ -23,9 +24,9 @@ def get_recipe(url: str) -> Optional[List[dict]]:
       recipe_df = get_recipe_df(metadata)
       if recipe_df is not None:
           recipe = {"recipe": {
-                       "name": recipe_df.name.values[0],
-                       "yield": get_servings(recipe_df.recipeYield.values[0]),
-                       "ingredients": get_ingredients(recipe_df.recipeIngredient.values[0])
+                       "name": html.unescape(recipe_df.name.values[0]),
+                       "yield": get_servings(html.unescape(recipe_df.recipeYield.values[0])),
+                       "ingredients": [html.unescape(el) for el in recipe_df.recipeIngredient.values[0]]
                       }
                   }
           return recipe
@@ -40,7 +41,7 @@ def get_recipe(url: str) -> Optional[List[dict]]:
             recipe = {"recipe": {
                      "name": get_title(downloaded),
                      "yield": None,
-                     "ingredients": get_ingredients(text)
+                     "ingredients": get_ingredients([html.unescape(el) for el in text])
                     }
                 }
             return recipe
@@ -107,10 +108,12 @@ def sentence_parser(result):
     try:
         sentences = sent_tokenize(result, language='french')
         for sentence in sentences:
-            if (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
-                [text.append(x) for x in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+            if (sentence.replace(",","* ").count('*') > 4):
+                [text.append(x.rstrip()) for x in sentence.replace(",","* ").replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+            elif (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
+                [text.append(x.rstrip()) for x in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
             else:
-                [text.append(x) for x in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')]
+                [text.append(x.rstrip()) for x in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')]
 
         # remove empty strings from list
         return list(filter(None, text))
@@ -119,4 +122,4 @@ def sentence_parser(result):
 
 
 def get_title(downloaded):
-    return trafilatura.bare_extraction(downloaded)['title']
+    return html.unescape(trafilatura.bare_extraction(downloaded)['title'])

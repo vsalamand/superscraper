@@ -4,16 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-spacy = "*"
 pydantic = "*"
 fastapi = "*"
 uvicorn = "*"
 pandas = "*"
 numpy = "*"
-spacy-transformers = "*"
 extruct = "*"
 trafilatura = "*"
 nltk = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
