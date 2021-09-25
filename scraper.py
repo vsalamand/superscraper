@@ -34,10 +34,10 @@ def get_recipe(url: str) -> Optional[List[dict]]:
     """Parse unstructured data from a URL."""
     downloaded = fetch_url(url)
     # to get the main text of a page
-    if downloaded is not None:
+    if downloaded != None:
         result = extract(downloaded, include_comments=False)
         text = sentence_parser(result)
-        if text is not None:
+        if text != None:
             recipe = {"recipe": {
                      "name": get_title(downloaded),
                      "yield": None,
