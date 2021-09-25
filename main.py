@@ -13,5 +13,10 @@ def read_main():
 def recipe(url: str):
     recipe = get_recipe(url)
     if recipe is None:
-      recipe = {"recipe": []}
+      recipe = {"recipe": {
+                       "name": None,
+                       "yield": None,
+                       "ingredients": None
+                      }
+                  }
     return recipe
