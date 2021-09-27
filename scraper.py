@@ -9,7 +9,13 @@ import html
 from w3lib.html import get_base_url
 from trafilatura import fetch_url, extract
 import trafilatura
-from nltk.tokenize import sent_tokenize
+
+#from nltk.tokenize import sent_tokenize
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+punkt_param = PunktParameters()
+abbreviation = ['cuil']
+punkt_param.abbrev_types = set(abbreviation)
+tokenizer = PunktSentenceTokenizer(punkt_param)
 
 from classifier import get_ingredients
 
@@ -106,17 +112,24 @@ def sentence_parser(result):
     # getting all the paragraphs
     text = []
     try:
-        sentences = sent_tokenize(result, language='french')
+        #sentences = sent_tokenize(result, language='french')
+        sentences = tokenizer.tokenize(result)
         for sentence in sentences:
             if (sentence.replace(",","* ").count('*') > 4):
-                [text.append(x.rstrip()) for x in sentence.replace(",","* ").replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+                [text.append(x.rstrip()) for x
+                                         in sentence.replace(",","* ").replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")
+                                         if len(x) < 140 ]
             elif (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
-                [text.append(x.rstrip()) for x in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")]
+                [text.append(x.rstrip()) for x
+                                         in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")
+                                         if len(x) < 140 ]
             else:
-                [text.append(x.rstrip()) for x in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')]
+                [text.append(x.rstrip()) for x
+                                         in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')
+                                         if len(x) < 140 ]
 
         # remove empty strings from list
-        return list(filter(None, text))
+        return list(filter(None, text))[:30]
     except:
         return None
 
