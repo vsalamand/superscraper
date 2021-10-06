@@ -12,6 +12,7 @@ import csv
 with open('taxonomy.csv') as f:
     df_category_taxonomy = pd.read_csv(f)
 
+stopwords = nltk.download('stopwords')
 
 def get_grocery_list(text_corpus):
     text_corpus = [doc[:40] for doc in text_corpus]
@@ -29,7 +30,7 @@ def get_grocery_list(text_corpus):
 
 
 def clean_data(w):
-    stopwords_list=stopwords.words('french')
+    stopwords_list = stopwords.words('french')
     w = w.lower()
     w=re.sub(r'[^\w\s]',' ',w)
     w=re.sub(r"([0-9])", r" ",w)
