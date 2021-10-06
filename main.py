@@ -1,5 +1,9 @@
 from fastapi import FastAPI
+from typing import Optional
+from pydantic import BaseModel
+
 from scraper import get_recipe
+from parser import get_grocery_list
 
 
 app = FastAPI()
@@ -20,3 +24,11 @@ def recipe(url: str):
                       }
                   }
     return recipe
+
+
+class GroceryList(BaseModel):
+    ingredients: list
+
+@app.post("/glist")
+def grocery_list(grocery_list: GroceryList):
+    return get_grocery_list(grocery_list.ingredients)

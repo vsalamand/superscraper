@@ -13,6 +13,9 @@ extruct = "*"
 trafilatura = "*"
 nltk = "*"
 python-dotenv = "*"
+thefuzz = "*"
+python-levenshtein = "*"
+textblob = "*"
 
 [dev-packages]
 
