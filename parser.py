@@ -24,11 +24,12 @@ def get_vocab(df_category_taxonomy):
 vocab, clean_categories_lowercase = get_vocab(df_category_taxonomy)
 
 # Create units stopowrds
-units = []
-units.append(["gramme"])
-units.append(["cuillère à soupe", "cuillères à soupe", "c. à soupe", "cuillère(s) à soupe", "c. à table", "cuillère à table"])
-units.append(["cuillère à café", "cuillère à café", "c. à café", "cuillère(s) à café", "c. à thé", "cuillère à thé"])
-units_stopwords_list = [item for sublist in units for item in sublist]
+stopwords = []
+stopwords.append(["gramme"])
+stopwords.append(["cuillère à soupe", "cuillères à soupe", "c. à soupe", "cuillère(s) à soupe", "c. à table", "cuillère à table"])
+stopwords.append(["cuillère à café", "cuillère à café", "c. à café", "cuillère(s) à café", "c. à thé", "cuillère à thé"])
+stopwords.append(["eau"])
+stopwords_list = [item for sublist in stopwords for item in sublist]
 
 def get_grocery_list(text_corpus):
     # initialize dataframe
@@ -71,7 +72,7 @@ def clean_data(w):
         return " ".join(singularized_clean_words)
 
 def remove_long_unit_patterns(document):
-    for pattern in units_stopwords_list:
+    for pattern in stopwords_list:
         document = document.lower().replace(pattern, "")
     return document
 
