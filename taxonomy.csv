@@ -7,7 +7,7 @@
 5,48,Vin,1/4,8,Boissons,vin
 6,50,Cidre,1/4,8,Boissons,cidre
 7,9,Soda,1/3,8,Boissons,soda
-8,27,Soda aux fruits,1/3/9,8,Boissons,soda fruit
+8,27,Soda aux fruits,1/3/9,8,Boissons,soda aux fruit
 9,87,Légumes à bulbe,2/85,1,Fruits & Légumes,légume bulbe
 10,89,Légumes feuilles,2/85,1,Fruits & Légumes,légume feuille
 11,88,Légumes fleurs,2/85,1,Fruits & Légumes,légume fleur
@@ -18,7 +18,7 @@
 16,153,Pomme de terre,2/85/92,1,Fruits & Légumes,pomme terre
 17,43,Jus de fruits exotiques,1/3/7,8,Boissons,ju fruit exotique
 18,39,Jus de légumes,1/3/7,8,Boissons,ju légume
-19,10,Boissons aux fruits,1/3,8,Boissons,boisson fruit
+19,10,Boissons aux fruits,1/3,8,Boissons,boisson aux fruit
 20,38,Jus de pomme,1/3/7,8,Boissons,ju pomme
 21,11,Eau plate,1/3/5,8,Boissons,eau plate
 22,12,Eau gazeuse,1/3/5,8,Boissons,eau gazeuse
@@ -38,7 +38,7 @@
 36,26,Tonic,1/3/9,8,Boissons,tonic
 37,31,Pocket enfant,1/3/10,8,Boissons,pocket enfant
 38,41,Jus multivitaminés,1/3/7,8,Boissons,ju multivitaminé
-39,34,Boisson aux fruits,1/3/10,8,Boissons,boisson fruit
+39,34,Boisson aux fruits,1/3/10,8,Boissons,boisson aux fruit
 40,877,Surimi,275/278/361,5,Viandes & Poissons,surimi
 41,35,Lait végétal,1/3/8,8,Boissons,lait végétal
 42,47,Smoothie,1/3/7,8,Boissons,smoothie
@@ -58,7 +58,7 @@
 56,68,Cidre doux,1/4/50,8,Boissons,cidre doux
 57,73,Cidre fruits rouges,1/4/50,8,Boissons,cidre fruit rouge
 58,82,Cocktail sans alcool,1/4/51,8,Boissons,cocktail san alcool
-59,83,Pineau des Charentes,1/4/51,8,Boissons,pineau charente
+59,83,Pineau des Charentes,1/4/51,8,Boissons,pineau de charente
 60,79,Téquila,1/4/51,8,Boissons,téquila
 61,56,Champagne,1/4/48,8,Boissons,champagne
 62,30,Citronnade,1/3/10,8,Boissons,citronnade
@@ -222,7 +222,7 @@
 220,330,Saucisson de Lyon,275/277/323,3,Frais,saucisson lyon
 221,332,Dés,275/277/318,3,Frais,dé
 222,196,Ciboulette,280/162,6,Épicerie salée,ciboulette
-223,341,Viande des grisons,275/277/335,3,Frais,viande grison
+223,341,Viande des grisons,275/277/335,3,Frais,viande de grison
 224,268,Abricot sec,2/86/267,7,Épicerie sucrée,abricot sec
 225,270,Raisin sec,2/86/267,7,Épicerie sucrée,raisin sec
 226,271,Figue séchée,2/86/267,7,Épicerie sucrée,figue séchée
@@ -356,7 +356,7 @@
 354,450,Pommes duchesse,2/85/433,4,Surgelés,pomme duchesse
 355,448,Pommes rissolées,2/85/433,4,Surgelés,pomme rissolée
 356,516,Yaourt à la grecque,435/507,3,Frais,yaourt grecque
-357,509,Yaourt aux fruits,435/507,3,Frais,yaourt fruit
+357,509,Yaourt aux fruits,435/507,3,Frais,yaourt aux fruit
 358,514,Yaourt enfants,435/507,3,Frais,yaourt enfant
 359,965,Maca,280/162,6,Épicerie salée,maca
 360,498,Chèvre,435/440/479,3,Frais,chèvre
@@ -367,7 +367,7 @@
 365,517,Desserts,436,3,Frais,dessert
 366,460,Fromage à tartiner,435/440,3,Frais,fromage tartiner
 367,461,Fromage apéritif,435/440,3,Frais,fromage apéritif
-368,462,Fromage pour enfants,435/440,3,Frais,fromage enfant
+368,462,Fromage pour enfants,435/440,3,Frais,fromage pmy enfant
 369,501,Margarine,435/499,3,Frais,margarine
 370,469,Beaufort,435/440/463,3,Frais,beaufort
 371,470,Grana padano,435/440/463,3,Frais,grana padano
@@ -433,7 +433,7 @@
 431,547,Dessert glacé,436/519,4,Surgelés,dessert glacé
 432,550,Chocolat blanc,436/520,7,Épicerie sucrée,chocolat blanc
 433,551,Chocolat pâtissier,436/520,7,Épicerie sucrée,chocolat pâtissier
-434,552,Chocolat pour enfants,436/520,7,Épicerie sucrée,chocolat enfant
+434,552,Chocolat pour enfants,436/520,7,Épicerie sucrée,chocolat pmy enfant
 435,553,Barre chocolatée,436/521,7,Épicerie sucrée,barre chocolatée
 436,554,boite de chocolat,436/521,7,Épicerie sucrée,boite chocolat
 437,555,bonbons au chocolat,436/521,7,Épicerie sucrée,bonbon chocolat
@@ -464,7 +464,7 @@
 462,597,Liégeois,436/517,3,Frais,liégeoi
 463,598,Riz au lait,436/517,3,Frais,riz lait
 464,599,Flan,436/517,3,Frais,flan
-465,600,Dessert pour enfants,436/517,3,Frais,dessert enfant
+465,600,Dessert pour enfants,436/517,3,Frais,dessert pmy enfant
 466,602,Dessert pâtissier,436/517,3,Frais,dessert pâtissier
 467,609,Huile de noix,438/603,6,Épicerie salée,huile noix
 468,610,Huile de noisettes,438/603,6,Épicerie salée,huile noisette
@@ -519,8 +519,8 @@
 517,682,Pâtes épeautre,437/629,6,Épicerie salée,pâte épeautre
 518,686,Pâtes quinoa,437/629,6,Épicerie salée,pâte quinoa
 519,691,Pain au seigle,437/518,34,Pains & Pâtisseries,pain seigle
-520,693,Pain aux céréales,437/518,34,Pains & Pâtisseries,pain céréale
-521,694,Pain aux graines,437/518,34,Pains & Pâtisseries,pain graine
+520,693,Pain aux céréales,437/518,34,Pains & Pâtisseries,pain aux céréale
+521,694,Pain aux graines,437/518,34,Pains & Pâtisseries,pain aux graine
 522,695,Pain précuit,437/518,34,Pains & Pâtisseries,pain précuit
 523,696,Pain azyme,437/518,34,Pains & Pâtisseries,pain azyme
 524,698,Pain suédois,437/518,34,Pains & Pâtisseries,pain suédoi
@@ -539,8 +539,8 @@
 537,628,Riz,437,6,Épicerie salée,riz
 538,649,Crozets,437/629,6,Épicerie salée,crozet
 539,647,Nouilles,437/629,6,Épicerie salée,nouille
-540,683,Pâtes aux pois chiches,437/629,6,Épicerie salée,pâte poi chich
-541,684,Pâtes aux lentilles,437/629,6,Épicerie salée,pâte lentille
+540,683,Pâtes aux pois chiches,437/629,6,Épicerie salée,pâte aux poi chich
+541,684,Pâtes aux lentilles,437/629,6,Épicerie salée,pâte aux lentille
 542,626,Graines,437,6,Épicerie salée,graine
 543,988,Yaourt de brebis,435/507,3,Frais,yaourt brebi
 544,755,Pâte brisée,439/729,3,Frais,pâte brisée
@@ -577,7 +577,7 @@
 575,709,Graines de pavot,437/626,6,Épicerie salée,graine pavot
 576,712,Graines de chia,437/626,6,Épicerie salée,graine chium
 577,884,Bouquet garni,280/162,6,Épicerie salée,bouquet garni
-578,715,Son d'avoine,437/626,6,Épicerie salée,avoine
+578,715,Son d'avoine,437/626,6,Épicerie salée,son avoine
 579,735,Pizza,439/734,6,Épicerie salée,pizza
 580,718,Flocons de soja,437/626,6,Épicerie salée,flocon soja
 581,719,Flocons de pois chiches,437/626,6,Épicerie salée,flocon poi chich
@@ -627,7 +627,7 @@
 625,438,Matières grasses,,6,Épicerie salée,matière grass
 626,507,Yaourt,435,3,Frais,yaourt
 627,812,Sauces,439/727,6,Épicerie salée,sauce
-628,794,sauces pour cuisiner,439/727/812,6,Épicerie salée,sauce cuisiner
+628,794,sauces pour cuisiner,439/727/812,6,Épicerie salée,sauce pmy cuisiner
 629,846,Pépites de chocolat,436/538/540,7,Épicerie sucrée,pépite chocolat
 630,850,Sucre vanillé,436/538/540,7,Épicerie sucrée,sucre vanillé
 631,852,Vanille,436/538/540,7,Épicerie sucrée,vanille
@@ -748,7 +748,7 @@
 746,437,Féculents,,6,Épicerie salée,féculent
 747,440,Fromage,435,3,Frais,fromage
 748,463,Fromage à pâte pressée,435/440,3,Frais,fromage pâte pressée
-749,805,Sauce pour pâtes et riz,439/727/812,6,Épicerie salée,sauce pâte riz
+749,805,Sauce pour pâtes et riz,439/727/812,6,Épicerie salée,sauce pmy pâte riz
 750,801,Sauces froides,439/727/812,6,Épicerie salée,sauce froide
 751,44,Jus de pamplemousse,1/3/7,8,Boissons,ju pamplemousse
 752,950,Chocolat en poudre,436/541,7,Épicerie sucrée,chocolat poudre
@@ -849,7 +849,7 @@
 847,475,Leerdammer,435/440/463,3,Frais,leerdammer
 848,487,Gorgonzola,435/440/481,3,Frais,gorgonzola
 849,495,Mozzarella di Bufala,435/440/491,3,Frais,mozzarella bufala
-850,170,Ail des ours,280/162,6,Épicerie salée,ail our
+850,170,Ail des ours,280/162,6,Épicerie salée,ail de our
 851,526,Purée d'amandes,2/86/525,7,Épicerie sucrée,purée amande
 852,500,Beurre,435/499,3,Frais,beurre
 853,529,Purée de sésame,2/86/525,7,Épicerie sucrée,purée sésame
@@ -929,7 +929,7 @@
 927,810,Sauce nuoc mam,439/727/812/801,6,Épicerie salée,sauce nuoc mam
 928,798,Coulis de tomate,439/727/812/794,6,Épicerie salée,couli tomate
 929,178,Haricot mungo,437/93/175,6,Épicerie salée,haricot mungo
-930,685,Pâtes aux lentilles corail,437/629,6,Épicerie salée,pâte lentille corail
+930,685,Pâtes aux lentilles corail,437/629,6,Épicerie salée,pâte aux lentille corail
 931,913,Piment,439/727/908,6,Épicerie salée,piment
 932,961,Blanc de poulet,275/276/290/303,5,Viandes & Poissons,blanc poulet
 933,33,Kombucha,1/3/10,8,Boissons,kombucha
