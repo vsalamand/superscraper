@@ -15,7 +15,7 @@ def query(payload):
   return response.json()
 
 def get_ingredients(text_list):
-  print('yo')
+  print(HF_API_KEY)
   try:
     # use only first N words to limit HF API usage based on characters
     inputs = [" ".join(string.lower().split(" ")[:3]) for string in text_list]
