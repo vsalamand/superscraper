@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 import re
 from thefuzz import fuzz
 from thefuzz import process
+import unidecode
 
 # get taxonomy from file
 import csv
@@ -30,42 +31,37 @@ stopwords.append(["cuillère à soupe", "cuillères à soupe", "c. à soupe", "c
 stopwords.append(["cuillère à café", "cuillère à café", "c. à café", "cuillère(s) à café", "c. à thé", "cuillère à thé"])
 stopwords_list = [item for sublist in stopwords for item in sublist]
 
-def get_grocery_list(text_corpus):
+
+def ingredients_parser(text_corpus):
     # initialize dataframe
-    gl_df = pd.DataFrame({'documents':text_corpus})
+    ing_df = pd.DataFrame({'documents':text_corpus})
 
     # filter documents characters limit
-    text_corpus = [doc[:40] for doc in text_corpus]
+    #text_corpus = [doc[:40] for doc in text_corpus]
 
     # return list clean documents based on vocab
     clean_corpus = get_clean_corpus(vocab, text_corpus)
-    gl_df['clean_documents'] = clean_corpus
+    ing_df['clean_documents'] = clean_corpus
 
     # return list of matched categories based on clean docuements
-    gl_df['clean_name'] = gl_df['clean_documents'].apply(get_matches)
+    ing_df['clean_name'] = ing_df['clean_documents'].apply(get_matches)
 
     # merge grocery list df and taxonomy df based on clean name
-    gl_df = gl_df.merge(df_category_taxonomy[['name', 'section', 'clean_name']], on='clean_name', how='left').drop_duplicates(subset=['documents'], keep='last')
+    ing_df = ing_df.merge(df_category_taxonomy[['name', 'section', 'clean_name']], on='clean_name', how='left').drop_duplicates(subset=['documents'], keep='last')
 
-    # return dict of category list for each section
-    group_categories_by_section = gl_df.groupby('section')['name'].apply(lambda g: list(set(g.values.tolist()))).to_dict()
-    results = []
-    results.append(group_categories_by_section)
-    grocery_list_dict = {"grocery_list": results
-                        }
-    return grocery_list_dict
+    return ing_df
 
 def clean_data(w):
     #stopwords_list = stopwords.words('french') not working in production
     w = remove_long_unit_patterns(w)
     w = w.lower()
-    w=re.sub(r'[^\w\s]',' ',w)
-    w=re.sub(r"([0-9])", r" ",w)
+    w = unidecode.unidecode(w)
+    w = re.sub(r'[^\w\s]',' ',w)
+    w = re.sub(r"([0-9])", r" ",w)
+    w = w.replace('œ', 'oe')
     words = w.split()
     # remove ingredients starting with 'pour' because indicates ingredients group
     if words[0] == "pour":
-        return ""
-    elif [word for word in words if "eau" in word]:
         return ""
     else:
         clean_words = [word for word in words if len(word) > 2] #(word not in stopwords_list) and len(word) > 2]

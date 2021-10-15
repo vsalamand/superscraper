@@ -18,7 +18,7 @@ punkt_param.abbrev_types = set(abbreviation)
 tokenizer = PunktSentenceTokenizer(punkt_param)
 
 from classifier import get_ingredients
-
+from parser import ingredients_parser
 
 
 # method to extract structured data
@@ -39,15 +39,22 @@ def get_recipe(url: str) -> Optional[List[dict]]:
 
     """Parse unstructured data from a URL."""
     downloaded = fetch_url(url)
+
     # to get the main text of a page
     if downloaded != None:
         result = extract(downloaded, include_comments=False)
+
+        # split in sentences
         text = sentence_parser(result)
+
+        # parse sentences with ingredients only
+        text = ingredients_parser(text).dropna().documents.tolist()
+
         if text != None:
             recipe = {"recipe": {
                      "name": get_title(downloaded),
                      "yield": None,
-                     "ingredients": get_ingredients([html.unescape(el) for el in text])
+                     "ingredients": get_ingredients([html.unescape(doc) for doc in text])
                     }
                 }
             return recipe

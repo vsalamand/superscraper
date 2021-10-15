@@ -16,6 +16,7 @@ python-dotenv = "*"
 thefuzz = "*"
 python-levenshtein = "*"
 textblob = "*"
+unidecode = "*"
 
 [dev-packages]
 

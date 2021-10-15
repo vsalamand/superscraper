@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from scraper import get_recipe
-from parser import get_grocery_list
+from grocery_list import get_grocery_list
 
 
 app = FastAPI()
@@ -13,9 +13,12 @@ app = FastAPI()
 def read_main():
     return {"message": "Hello World"}
 
-@app.get("/r/u={url:path}")
-def recipe(url: str):
-    recipe = get_recipe(url)
+class RecipeUrl(BaseModel):
+    url: str
+
+@app.post("/r")
+def recipe(recipe: RecipeUrl):
+    recipe = get_recipe(recipe.url)
     if recipe is None:
       recipe = {"recipe": {
                        "name": None,

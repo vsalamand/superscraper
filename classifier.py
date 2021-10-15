@@ -7,7 +7,7 @@ load_dotenv()  # take environment variables from .env.
 
 HF_API_KEY = os.environ.get("HF_API_KEY")
 
-API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr-ingredient-classifier-11272321"
+API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr_get_ingredient_sentences-18353298"
 headers = {"Authorization": HF_API_KEY}
 
 def query(payload):
@@ -16,8 +16,8 @@ def query(payload):
 
 def get_ingredients(text_list):
   try:
-    # cut strings max characters to limit HF API usage based on characters
-    inputs = [string[:70] for string in text_list]
+    # use only first N words to limit HF API usage based on characters
+    inputs = [" ".join(string.lower().split(" ")[:3]) for string in text_list]
 
     # output is a list of list of dic with label and score
     output = query(inputs)
@@ -29,7 +29,7 @@ def get_ingredients(text_list):
 
     # return list of text inputs that correspond to ingredients
     df = pd.DataFrame(list(zip(text_list, preds)), columns = ['text', 'preds'])
-    df_ingredients = df[df["preds"] == '1']
+    df_ingredients = df[df["preds"] == 'yes']
     return df_ingredients.text.to_list()
 
   except:
