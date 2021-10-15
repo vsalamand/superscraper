@@ -15,14 +15,12 @@ def query(payload):
   return response.json()
 
 def get_ingredients(text_list):
-  print(HF_API_KEY)
   try:
     # use only first N words to limit HF API usage based on characters
     inputs = [" ".join(string.lower().split(" ")[:3]) for string in text_list]
 
     # output is a list of list of dic with label and score
     output = query(inputs)
-    print(output)
     # retry if model is not loaded yet
     if not isinstance(output, list):
       time.sleep(10)
@@ -37,7 +35,7 @@ def get_ingredients(text_list):
     df = pd.DataFrame(list(zip(text_list, preds)), columns = ['text', 'preds'])
     df_ingredients = df[df["preds"].isin(['1', 'yes'])]
 
-    return df_ingredients.text.to_list()
+    return [ing.strip() for ing in df_ingredients.text.to_list()]
 
   except:
     return None
