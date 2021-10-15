@@ -10,6 +10,11 @@ from w3lib.html import get_base_url
 from trafilatura import fetch_url, extract
 import trafilatura
 
+from requests import get
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
+from urllib.parse import unquote
+
 #from nltk.tokenize import sent_tokenize
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 punkt_param = PunktParameters()
@@ -21,23 +26,27 @@ from classifier import get_ingredients
 from parser import ingredients_parser
 
 
-# method to extract structured data
+
+"""--- MASTER PARSER METHOD to parse structured data, if fail, try unstructured data"""
 
 def get_recipe(url: str) -> Optional[List[dict]]:
-    """Parse structured data from a URL. JSON-lD / MICRODATA"""
+
+    """# 1. STRUCTURED DATA - JSON-lD / MICRODATA"""
     metadata = get_metadata(url)
     if metadata:
       recipe_df = get_recipe_df(metadata)
+
       if recipe_df is not None:
           recipe = {"recipe": {
                        "name": html.unescape(recipe_df.name.values[0]),
                        "yield": get_servings(html.unescape(recipe_df.recipeYield.values[0])),
-                       "ingredients": [html.unescape(el) for el in recipe_df.recipeIngredient.values[0]]
+                       "ingredients": [html.unescape(el) for el in recipe_df.recipeIngredient.values[0]],
+                       "images": get_images(recipe_df)
                       }
                   }
           return recipe
 
-    """Parse unstructured data from a URL."""
+    """2. PARSE UNSTRUCTED DATA."""
     downloaded = fetch_url(url)
 
     # to get the main text of a page
@@ -54,7 +63,8 @@ def get_recipe(url: str) -> Optional[List[dict]]:
             recipe = {"recipe": {
                      "name": get_title(downloaded),
                      "yield": None,
-                     "ingredients": get_ingredients([html.unescape(doc) for doc in text])
+                     "ingredients": get_ingredients([html.unescape(doc) for doc in text]),
+                     "images": download_images(url)
                     }
                 }
             return recipe
@@ -63,6 +73,9 @@ def get_recipe(url: str) -> Optional[List[dict]]:
     return None
 
 
+
+
+"""--- PARSER METHODS BELOW ---"""
 
 def get_metadata(url: str):
     headers = {
@@ -143,3 +156,68 @@ def sentence_parser(result):
 
 def get_title(downloaded):
     return html.unescape(trafilatura.bare_extraction(downloaded)['title'])
+
+
+def get_images(recipe_df):
+    images = recipe_df.image.values[0]
+    if isinstance(images, str):
+        image_array = []
+        image_array.append(images)
+        return image_array
+    else:
+        return images
+
+
+
+def download_images(url):
+    url_patterns = get_url_patterns(url)
+    htmldata = requests.get(url).text
+    soup = BeautifulSoup(htmldata, 'html.parser')
+
+    images = []
+
+    # search images in soup
+    for item in soup.find_all('img'):
+        try:
+            image_url = unquote(item['src'])
+            image_url_patterns = get_url_patterns(image_url)
+            pattern_matches = [x for x in url_patterns if x in image_url_patterns]
+            if len(pattern_matches) > 0:
+                images.append(image_url)
+        except:
+            continue
+    if (len(images) > 0):
+        return images[:2]
+
+    # if no matche, look for articles images in soup
+    for article in soup.find_all('article'):
+        for item in article.find_all('img'):
+            try:
+                image_url = unquote(item['src'])
+                image_url_patterns = get_url_patterns(image_url)
+                pattern_matches = [x for x in url_patterns if x in image_url_patterns]
+                if len(pattern_matches) > 0:
+                    images.append(image_url)
+                elif 'uploads' in image_url_patterns :
+                    images.append(image_url)
+            except:
+                continue
+    if (len(images) > 0):
+        return images[:2]
+
+    # if no matches, return empty array
+    return images[:2]
+
+
+def get_url_patterns(url):
+    url = unquote(url)
+    path = urlparse(url).path
+    path_elements = path.split('/')
+    path_elements = [el.split('-') for el in path_elements if el]
+    path_elements = [item for sublist in path_elements for item in sublist]
+    path_elements = [el.split('_') for el in path_elements if el]
+    path_elements = [item.lower() for sublist in path_elements for item in sublist]
+    path_elements = [el.split('+') for el in path_elements if el]
+    path_elements = [item.lower() for sublist in path_elements for item in sublist]
+    return path_elements
+
