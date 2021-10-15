@@ -29,6 +29,7 @@ stopwords = []
 stopwords.append(["gramme"])
 stopwords.append(["cuillère à soupe", "cuillères à soupe", "c. à soupe", "cuillère(s) à soupe", "c. à table", "cuillère à table"])
 stopwords.append(["cuillère à café", "cuillère à café", "c. à café", "cuillère(s) à café", "c. à thé", "cuillère à thé"])
+stopwords.append(["cuillère", "cuillere", "cuillères", "cuilleres"])
 stopwords_list = [item for sublist in stopwords for item in sublist]
 
 
@@ -61,7 +62,7 @@ def clean_data(w):
     w = w.replace('œ', 'oe')
     words = w.split()
     # remove ingredients starting with 'pour' because indicates ingredients group
-    if words[0] == "pour":
+    if len(words) > 0 and words[0] == "pour":
         return ""
     else:
         clean_words = [word for word in words if len(word) > 2] #(word not in stopwords_list) and len(word) > 2]

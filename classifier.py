@@ -21,6 +21,10 @@ def get_ingredients(text_list):
 
     # output is a list of list of dic with label and score
     output = query(inputs)
+    # retry if model is not loaded yet
+    if not isinstance(output, list):
+      time.sleep(10)
+      output = query(inputs)
 
     # extract label predicted for each input
     preds = []
@@ -29,7 +33,8 @@ def get_ingredients(text_list):
 
     # return list of text inputs that correspond to ingredients
     df = pd.DataFrame(list(zip(text_list, preds)), columns = ['text', 'preds'])
-    df_ingredients = df[df["preds"] == 'yes']
+    df_ingredients = df[df["preds"].isin(['1', 'yes'])]
+
     return df_ingredients.text.to_list()
 
   except:
