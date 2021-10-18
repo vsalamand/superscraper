@@ -48,7 +48,10 @@ def ingredients_parser(text_corpus):
     ing_df['clean_name'] = ing_df['clean_documents'].apply(get_matches)
 
     # merge grocery list df and taxonomy df based on clean name
-    ing_df = ing_df.merge(df_category_taxonomy[['name', 'section', 'clean_name']], on='clean_name', how='left').drop_duplicates(subset=['documents'], keep='last')
+    ing_df = ing_df.merge(df_category_taxonomy[['name', 'section', 'clean_name']], on='clean_name', how='left').drop_duplicates(subset=['documents'], keep='last').dropna()
+
+    # reset index in case of error
+    ing_df.reset_index(drop=True, inplace=True)
 
     return ing_df
 

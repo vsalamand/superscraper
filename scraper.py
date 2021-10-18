@@ -9,6 +9,7 @@ import html
 from w3lib.html import get_base_url
 from trafilatura import fetch_url, extract
 import trafilatura
+import re
 
 from requests import get
 from bs4 import BeautifulSoup
@@ -45,6 +46,7 @@ def get_recipe(url: str) -> Optional[List[dict]]:
                       }
                   }
           return recipe
+
 
     """2. PARSE UNSTRUCTED DATA."""
     downloaded = fetch_url(url)
@@ -87,22 +89,26 @@ def get_metadata(url: str):
     }
     r = requests.get(url, headers=headers)
 
-    """Fetch JSON-LD & Microdata structured data."""
-    metadata = extruct.extract(
-        r.text,
-        base_url = get_base_url(r.text, r.url),
-        syntaxes=['json-ld', 'microdata'],
-        uniform=True
-    )
-    if metadata.get('json-ld'):
-      metadata = metadata['json-ld']
-    else:
-      metadata = metadata['microdata']
+    try:
+      """Fetch JSON-LD & Microdata structured data."""
+      metadata = extruct.extract(
+          r.text,
+          base_url = get_base_url(r.text, r.url),
+          syntaxes=['json-ld', 'microdata'],
+          uniform=True
+      )
+      if metadata.get('json-ld'):
+        metadata = metadata['json-ld']
+      else:
+        metadata = metadata['microdata']
 
-    if bool(metadata) and isinstance(metadata, list):
-        metadata = metadata[0]
+      if bool(metadata) and isinstance(metadata, list):
+          metadata = metadata[0]
 
-    return metadata
+      return metadata
+
+    except ValueError:
+        return None
 
 def get_recipe_df(metadata):
     #check metadata dict format
@@ -134,17 +140,20 @@ def sentence_parser(result):
     try:
         #sentences = sent_tokenize(result, language='french')
         sentences = tokenizer.tokenize(result)
+        # split sentences if digit is next to letter 'eg:pour 4 personnes4 courgettes'
+        sentences = [s for sentence in sentences for s in re.split("[a-zA-Z](\\d+.*)",sentence)]
+
         for sentence in sentences:
             if (sentence.replace(",","* ").count('*') > 4):
-                [text.append(x.rstrip()) for x
+                [text.append(x.strip()) for x
                                          in sentence.replace(",","* ").replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")
                                          if len(x) < 140 ]
             elif (sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").count('*') > 2):
-                [text.append(x.rstrip()) for x
+                [text.append(x.strip()) for x
                                          in sentence.replace("\n","* ").replace("– ","* ").replace("- ","* ").replace("• ","* ").replace("• ","* ").split("* ")
                                          if len(x) < 140 ]
             else:
-                [text.append(x.rstrip()) for x
+                [text.append(x.strip()) for x
                                          in sentence.replace('\n', '* ').replace('\r', '* ').replace('\xa0', '* ').split('* ')
                                          if len(x) < 140 ]
 
@@ -171,6 +180,12 @@ def get_images(recipe_df):
 
 def download_images(url):
     url_patterns = get_url_patterns(url)
+
+    len_start = 0
+    # do not take 1 image for over-blog sites
+    if "over-blog" in url:
+        len_start = 1
+
     htmldata = requests.get(url).text
     soup = BeautifulSoup(htmldata, 'html.parser')
 
@@ -187,7 +202,7 @@ def download_images(url):
         except:
             continue
     if (len(images) > 0):
-        return images[:2]
+        return images[len_start:2]
 
     # if no matche, look for articles images in soup
     for article in soup.find_all('article'):
@@ -203,10 +218,27 @@ def download_images(url):
             except:
                 continue
     if (len(images) > 0):
-        return images[:2]
+        return images[len_start:2]
+
+    # if no matche, look for figures images in soup
+    for article in soup.find_all('figure'):
+        for item in article.find_all('img'):
+            try:
+                image_url = unquote(item['src'])
+                print(item['src'])
+                image_url_patterns = get_url_patterns(image_url)
+                pattern_matches = [x for x in url_patterns if x in image_url_patterns]
+                if len(pattern_matches) > 0:
+                    images.append(image_url)
+                elif (any(x in ['uploads', 'image'] for x in image_url_patterns)):
+                    images.append(item['src'])
+            except:
+                continue
+    if (len(images) > 0):
+        return images[len_start:2]
 
     # if no matches, return empty array
-    return images[:2]
+    return images[len_start:2]
 
 
 def get_url_patterns(url):

@@ -23,8 +23,10 @@ def get_ingredients(text_list):
     output = query(inputs)
     # retry if model is not loaded yet
     if not isinstance(output, list):
-      time.sleep(10)
+      print(response.json())
+      time.sleep(20)
       output = query(inputs)
+
 
     # extract label predicted for each input
     preds = []
