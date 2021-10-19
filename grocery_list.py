@@ -9,7 +9,7 @@ def get_grocery_list(ingredient_inputs):
     gl_df = ingredients_parser(ingredient_inputs)
 
     # hide unwanted categories
-    hidden_cat = ["eau", "sel", "poivre"]
+    hidden_cat = ["eau", "sel", "vegan"]
     remove_categories_by_index = gl_df.index[gl_df.clean_documents.str.contains('|'.join(hidden_cat))].tolist()
     gl_df = gl_df.drop(gl_df.index[remove_categories_by_index])
 

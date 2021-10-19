@@ -139,9 +139,13 @@ def sentence_parser(result):
     text = []
     try:
         #sentences = sent_tokenize(result, language='french')
-        sentences = tokenizer.tokenize(result)
-        # split sentences if digit is next to letter 'eg:pour 4 personnes4 courgettes'
-        sentences = [s for sentence in sentences for s in re.split("[a-zA-Z](\\d+.*)",sentence)]
+        sentence_tokens = tokenizer.tokenize(result)
+
+        # # split sentences if digit is next to letter 'eg:pour 4 personnes4 courgettes'
+        sentences = []
+        for sentence in sentence_tokens:
+            sentences.append(re.split("(?<=[a-z])(?=\\d)", sentence))
+        sentences = [item for sublist in sentences for item in sublist]
 
         for sentence in sentences:
             if (sentence.replace(",","* ").count('*') > 4):

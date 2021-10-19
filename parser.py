@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 import pprint
-from textblob import TextBlob
+#from textblob import TextBlob
+from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
+lemmatizer = FrenchLefffLemmatizer()
+
 import nltk
 from nltk.corpus import stopwords
 import re
@@ -16,7 +19,7 @@ with open('taxonomy.csv') as f:
 
 # get vocab and clean categories list
 def get_vocab(df_category_taxonomy):
-    clean_categories = df_category_taxonomy.clean_name.tolist()
+    clean_categories = df_category_taxonomy.clean_name.astype(str).tolist()
     clean_categories_lowercase = [x.lower().split(" ") for x in clean_categories]
     clean_categories_lowercase_corpus = [item for sublist in clean_categories_lowercase for item in sublist]
     vocab = set(clean_categories_lowercase_corpus)
@@ -30,6 +33,7 @@ stopwords.append(["gramme"])
 stopwords.append(["cuillère à soupe", "cuillères à soupe", "c. à soupe", "cuillère(s) à soupe", "c. à table", "cuillère à table"])
 stopwords.append(["cuillère à café", "cuillère à café", "c. à café", "cuillère(s) à café", "c. à thé", "cuillère à thé"])
 stopwords.append(["cuillère", "cuillere", "cuillères", "cuilleres"])
+stopwords.append(["conserve"])
 stopwords_list = [item for sublist in stopwords for item in sublist]
 
 
@@ -58,19 +62,33 @@ def ingredients_parser(text_corpus):
 def clean_data(w):
     #stopwords_list = stopwords.words('french') not working in production
     w = remove_long_unit_patterns(w)
+    # remove text in parentehses
+    w = re.sub(r'\(.*\)', '', w)
     w = w.lower()
+    # singularize words
+    w = " ".join([lemmatizer.lemmatize(word) for word in w.split(' ')])
+    # remove accents
     w = unidecode.unidecode(w)
     w = re.sub(r'[^\w\s]',' ',w)
+    # remove digits
     w = re.sub(r"([0-9])", r" ",w)
+    # fix oeuf
     w = w.replace('œ', 'oe')
+
     words = w.split()
+
+    # remove elements after ' ou '
+    if "ou" in words:
+      ban_index = words.index("ou")
+      words = words[:ban_index]
+
     # remove ingredients starting with 'pour' because indicates ingredients group
     if len(words) > 0 and words[0] == "pour":
         return ""
     else:
         clean_words = [word for word in words if len(word) > 2] #(word not in stopwords_list) and len(word) > 2]
-        singularized_clean_words = TextBlob(" ".join(clean_words)).words.singularize()
-        return " ".join(singularized_clean_words)
+        # singularized_clean_words = TextBlob(" ".join(clean_words)).words.singularize()
+        return " ".join(clean_words)
 
 def remove_long_unit_patterns(document):
     for pattern in stopwords_list:
@@ -90,7 +108,7 @@ def get_clean_corpus(vocab, text_corpus):
 def get_matches(clean_document):
     if len(clean_document) > 0:
         # find exact matches
-        if len(df_category_taxonomy[df_category_taxonomy['clean_name'].str.match(clean_document)]) > 0:
+        if len(df_category_taxonomy[df_category_taxonomy['clean_name'].str.match(clean_document, na=False)]) > 0:
             return clean_document
         else:
             # else get 3 top possibilities

@@ -17,6 +17,7 @@ thefuzz = "*"
 python-levenshtein = "*"
 textblob = "*"
 unidecode = "*"
+frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
 
 [dev-packages]
 
