@@ -34,6 +34,7 @@ from parser import ingredients_parser
 
 def get_recipe(url: str) -> Optional[List[dict]]:
 
+    """# 1. Instragam post"""
 
     instagram_post_id = get_instagram_post_id(url)
     if instagram_post_id:
@@ -44,21 +45,26 @@ def get_recipe(url: str) -> Optional[List[dict]]:
         """ pre-process text """
         text = get_processed_text(post.text)
 
+        # get recipe data
+        ingredients = get_ingredients([html.unescape(doc) for doc in text])
+        images = post.display_url.split()
+
       except:
-        post = None
+        ingredients = None
+        images = []
 
       """ return recipe dic """
       recipe = {"recipe": {
                "name": None,
                "yield": None,
-               "ingredients": get_ingredients([html.unescape(doc) for doc in text]) if text != None else None,
-               "images": post.display_url.split() if post != None else None
+               "ingredients": ingredients,
+               "images": images
               }
           }
       return recipe
 
 
-    """# 1. STRUCTURED DATA - JSON-lD / MICRODATA"""
+    """# 2. STRUCTURED DATA - JSON-lD / MICRODATA"""
     metadata = get_metadata(url)
     if metadata:
       recipe_df = get_recipe_df(metadata)
@@ -74,7 +80,7 @@ def get_recipe(url: str) -> Optional[List[dict]]:
           return recipe
 
 
-    """2. PARSE UNSTRUCTED DATA."""
+    """3. PARSE UNSTRUCTED DATA."""
     downloaded = fetch_url(url)
 
     # to get the main text of a page
@@ -84,17 +90,28 @@ def get_recipe(url: str) -> Optional[List[dict]]:
         """ pre-process text """
         text = get_processed_text(text_input)
 
+        # get recipe data
+        name = get_title(downloaded)
+        images = download_images(url)
+        if text != None:
+          ingredients = get_ingredients([html.unescape(doc) for doc in text])
+        else:
+          ingredients = None
+
+
         """ return recipe ditc """
         recipe = {"recipe": {
-                 "name": get_title(downloaded),
+                 "name": name,
                  "yield": None,
-                 "ingredients": get_ingredients([html.unescape(doc) for doc in text]) if text != None else None,
-                 "images": download_images(url)
+                 "ingredients": ingredients,
+                 "images": images
                 }
             }
         return recipe
 
-    """If nothing was parsed correctly"""
+
+    """4. NO PARSING."""
+
     recipe = {"recipe": {
                      "name": None,
                      "yield": None,
