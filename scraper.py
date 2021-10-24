@@ -52,7 +52,7 @@ def get_recipe(url: str) -> Optional[List[dict]]:
 
       except:
         ingredients = None
-        images = []
+        images = None
 
       """ return recipe dic """
       recipe = {"recipe": {
