@@ -40,7 +40,8 @@ def get_recipe(url: str) -> Optional[List[dict]]:
     if instagram_post_id:
       """ do code for Instagram post """
       try:
-        post = InstagramPost(instagram_post_id)
+        session_id = ''
+        post = InstagramPost(instagram_post_id, sessionid=session_id)
 
         """ pre-process text """
         text = get_processed_text(post.text)
