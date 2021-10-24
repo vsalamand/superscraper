@@ -70,8 +70,10 @@ def clean_data(w):
     # remove accents
     w = unidecode.unidecode(w)
     w = re.sub(r'[^\w\s]',' ',w)
-    # remove digits
-    w = re.sub(r"([0-9])", r" ",w)
+   # # remove digits
+    #w = re.sub(r"([0-9])", r" ",w)
+    # remove non-alphanumeric
+    w = re.sub(r"\W+", r" ",w)
     # fix oeuf
     w = w.replace('œ', 'oe')
 

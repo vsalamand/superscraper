@@ -16,6 +16,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from urllib.parse import unquote
 
+from instagramy import InstagramPost
+
 #from nltk.tokenize import sent_tokenize
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 punkt_param = PunktParameters()
@@ -31,6 +33,30 @@ from parser import ingredients_parser
 """--- MASTER PARSER METHOD to parse structured data, if fail, try unstructured data"""
 
 def get_recipe(url: str) -> Optional[List[dict]]:
+
+
+    instagram_post_id = get_instagram_post_id(url)
+    if instagram_post_id:
+      """ do code for Instagram post """
+      try:
+        post = InstagramPost(instagram_post_id)
+
+        """ pre-process text """
+        text = get_processed_text(post.text)
+
+      except:
+        post = None
+
+      """ return recipe dic """
+      recipe = {"recipe": {
+               "name": None,
+               "yield": None,
+               "ingredients": get_ingredients([html.unescape(doc) for doc in text]) if text != None else None,
+               "images": post.display_url.split() if post != None else None
+              }
+          }
+      return recipe
+
 
     """# 1. STRUCTURED DATA - JSON-lD / MICRODATA"""
     metadata = get_metadata(url)
@@ -53,26 +79,31 @@ def get_recipe(url: str) -> Optional[List[dict]]:
 
     # to get the main text of a page
     if downloaded != None:
-        result = extract(downloaded, include_comments=False)
+        text_input = extract(downloaded, include_comments=False)
 
-        # split in sentences
-        text = sentence_parser(result)
+        """ pre-process text """
+        text = get_processed_text(text_input)
 
-        # parse sentences with ingredients only
-        text = ingredients_parser(text).dropna().documents.tolist()
-
-        if text != None:
-            recipe = {"recipe": {
-                     "name": get_title(downloaded),
-                     "yield": None,
-                     "ingredients": get_ingredients([html.unescape(doc) for doc in text]),
-                     "images": download_images(url)
-                    }
+        """ return recipe ditc """
+        recipe = {"recipe": {
+                 "name": get_title(downloaded),
+                 "yield": None,
+                 "ingredients": get_ingredients([html.unescape(doc) for doc in text]) if text != None else None,
+                 "images": download_images(url)
                 }
-            return recipe
+            }
+        return recipe
 
     """If nothing was parsed correctly"""
-    return None
+    recipe = {"recipe": {
+                     "name": None,
+                     "yield": None,
+                     "ingredients": None,
+                     "images": None
+                    }
+                }
+
+    return recipe
 
 
 
@@ -132,6 +163,15 @@ def get_servings(value):
   else:
     return value
 
+
+def get_processed_text(text_input):
+    # split in sentences
+  text = sentence_parser(text_input)
+
+  # parse sentences with ingredients only
+  text = ingredients_parser(text).dropna().documents.str.replace('[^\\w\' ]+', '', regex=True).tolist()
+
+  return text
 
 
 def sentence_parser(result):
@@ -256,4 +296,15 @@ def get_url_patterns(url):
     path_elements = [el.split('+') for el in path_elements if el]
     path_elements = [item.lower() for sublist in path_elements for item in sublist]
     return path_elements
+
+
+
+def get_instagram_post_id(url):
+    if ("instagram" in urlparse(url).netloc):
+        post_id = list(filter(None, urlparse(url).path.split('/')))
+        media_types = ["p", "reel"]
+        post_id = [ x for x in post_id if x not in media_types]
+        return post_id[0]
+    else:
+        return None
 
