@@ -17,6 +17,7 @@ from urllib.parse import urlparse
 from urllib.parse import unquote
 import json
 import unidecode
+from datetime import datetime
 
 from dotenv import load_dotenv
 import os
@@ -328,17 +329,9 @@ def get_url_patterns(url):
 
 
 def get_insta_soup(url):
-  headers = {
-      'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-      'email': INSTA_EMAIL,
-      'pass' : INSTA_PWD
-  }
   try:
-    response = requests.get(url, headers=headers)
-    session = requests.Session()
-    print(session)
-    session.post(url, data=headers)
-    print(response.text)
+    login_instagram()
+    response = requests.get(url)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -346,4 +339,35 @@ def get_insta_soup(url):
 
   except:
       return None
+
+
+def login_instagram():
+  link = 'https://www.instagram.com/accounts/login/'
+  login_url = 'https://www.instagram.com/accounts/login/ajax/'
+
+  time = int(datetime.now().timestamp())
+
+  payload = {
+      'username': 'clubmama_',
+      'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{time}:{INSTA_PWD}',
+      'queryParams': {},
+      'optIntoOneTap': 'false'
+  }
+
+  with requests.Session() as session:
+      r = session.get(link)
+      csrf = re.findall(r"csrf_token\":\"(.*?)\"", r.text)[0]
+      login_header = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
+              "X-Requested-With": "XMLHttpRequest",
+              "Referer": "https://www.instagram.com/accounts/login/",
+              "x-csrftoken": csrf
+          }
+      r = session.post(login_url, data=payload, headers=login_header)
+      print(r.status_code)
+
+
+
+
+
 
