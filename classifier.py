@@ -1,5 +1,8 @@
 import requests
 import pandas as pd
+
+from parser import get_matches
+
 from dotenv import load_dotenv
 import os
 
@@ -21,7 +24,7 @@ def get_ingredients(text_list):
 
     # output is a list of list of dic with label and score
     output = query(inputs)
-    # retry if model is not loaded yet
+    # retry if model is not loaded yet (NOT WORKING)
     if not isinstance(output, list):
       print(response.json())
       time.sleep(20)
@@ -37,7 +40,13 @@ def get_ingredients(text_list):
     df = pd.DataFrame(list(zip(text_list, preds)), columns = ['text', 'preds'])
     df_ingredients = df[df["preds"].isin(['1', 'yes'])]
 
-    return [ing.strip() for ing in df_ingredients.text.to_list()]
+    ## remove duplicated ingredients (eg: when instructions are considered like ingredients)
+    #df_ingredients['matches'] = df_ingredients['text'].apply(get_matches)
+    #df_ingredients = df_ingredients.drop_duplicates(subset='matches', keep="first")
+
+    # return ingredients as list based on predictions
+    ingredients = [ing.strip() for ing in df_ingredients.text.to_list()]
+    return  ingredients
 
   except:
     return None

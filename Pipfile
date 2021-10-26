@@ -18,7 +18,6 @@ python-levenshtein = "*"
 textblob = "*"
 unidecode = "*"
 frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
-instagramy = "*"
 
 [dev-packages]
 

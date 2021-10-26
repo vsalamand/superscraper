@@ -23,7 +23,8 @@ def recipe(recipe: RecipeUrl):
       recipe = {"recipe": {
                        "name": None,
                        "yield": None,
-                       "ingredients": None
+                       "ingredients": None,
+                       "images": None
                       }
                   }
     return recipe

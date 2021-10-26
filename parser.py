@@ -41,6 +41,9 @@ def ingredients_parser(text_corpus):
     # initialize dataframe
     ing_df = pd.DataFrame({'documents':text_corpus})
 
+    # remove leading and trailing non alphanumeric characters
+    ing_df['documents'] = ing_df.documents.str.replace("^\\W+|\\W+$", '', regex=True).dropna()
+
     # filter documents characters limit
     #text_corpus = [doc[:40] for doc in text_corpus]
 
@@ -65,6 +68,8 @@ def clean_data(w):
     # remove text in parentehses
     w = re.sub(r'\(.*\)', '', w)
     w = w.lower()
+    # fix oeuf
+    w = w.replace('œ', 'oe')
     # singularize words
     w = " ".join([lemmatizer.lemmatize(word) for word in w.split(' ')])
     # remove accents
@@ -74,8 +79,6 @@ def clean_data(w):
     #w = re.sub(r"([0-9])", r" ",w)
     # remove non-alphanumeric
     w = re.sub(r"\W+", r" ",w)
-    # fix oeuf
-    w = w.replace('œ', 'oe')
 
     words = w.split()
 
@@ -102,6 +105,7 @@ def get_clean_corpus(vocab, text_corpus):
     texts = [[word for word in clean_data(document).split(' ')
                              if word in list(vocab)]
                              for document in text_corpus]
+
     # Only keep 3 first words that appear more than once and join as a string
     processed_corpus = [' '.join([token for token in text[:3]]) for text in texts]
     #pprint.pprint(processed_corpus)

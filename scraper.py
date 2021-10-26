@@ -15,8 +15,17 @@ from requests import get
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from urllib.parse import unquote
+import json
+import unidecode
 
-from instagramy import InstagramPost
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # take environment variables from .env.
+
+INSTA_EMAIL = os.environ.get("INSTA_EMAIL")
+INSTA_PWD = os.environ.get("INSTA_PWD")
+
 
 #from nltk.tokenize import sent_tokenize
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
@@ -33,22 +42,23 @@ from parser import ingredients_parser
 """--- MASTER PARSER METHOD to parse structured data, if fail, try unstructured data"""
 
 def get_recipe(url: str) -> Optional[List[dict]]:
+    # clean URL
+    url = urlparse(url).scheme + '://' + urlparse(url).netloc + urlparse(url).path
 
-    """# 1. Instragam post"""
+    """# 1. INSTAGRAM POST"""
+    if ("instagram" in urlparse(url).netloc):
 
-    instagram_post_id = get_instagram_post_id(url)
-    if instagram_post_id:
-      """ do code for Instagram post """
       try:
-        session_id = ''
-        post = InstagramPost(instagram_post_id, sessionid=session_id)
+        insta_soup = get_insta_soup(url)
+        insta_text = json.loads(insta_soup.find("script", type="application/ld+json").string)['caption']
 
         """ pre-process text """
-        text = get_processed_text(post.text)
+        text = get_processed_text(insta_text)
 
         # get recipe data
         ingredients = get_ingredients([html.unescape(doc) for doc in text])
-        images = post.display_url.split()
+        images = insta_soup.find("meta", property='og:image')['content'].replace("\\u0026","&").split()
+
 
       except:
         ingredients = None
@@ -187,7 +197,7 @@ def get_processed_text(text_input):
   text = sentence_parser(text_input)
 
   # parse sentences with ingredients only
-  text = ingredients_parser(text).dropna().documents.str.replace('[^\\w\' ]+', '', regex=True).tolist()
+  text = ingredients_parser(text).documents.tolist()
 
   return text
 
@@ -199,10 +209,11 @@ def sentence_parser(result):
         #sentences = sent_tokenize(result, language='french')
         sentence_tokens = tokenizer.tokenize(result)
 
-        # # split sentences if digit is next to letter 'eg:pour 4 personnes4 courgettes'
+        # # decode and split sentences if digit is next to letter 'eg:pour 4 personnes4 courgettes'
         sentences = []
         for sentence in sentence_tokens:
-            sentences.append(re.split("(?<=[a-z])(?=\\d)", sentence))
+            # unescape text in case of &#x27; types of characters with beautiful soup
+            sentences.append(re.split("(?<=[a-z])(?=\\d)", html.unescape(sentence)))
         sentences = [item for sublist in sentences for item in sublist]
 
         for sentence in sentences:
@@ -317,12 +328,21 @@ def get_url_patterns(url):
 
 
 
-def get_instagram_post_id(url):
-    if ("instagram" in urlparse(url).netloc):
-        post_id = list(filter(None, urlparse(url).path.split('/')))
-        media_types = ["p", "reel"]
-        post_id = [ x for x in post_id if x not in media_types]
-        return post_id[0]
-    else:
-        return None
+def get_insta_soup(url):
+  headers = {
+      'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
+      'email': INSTA_EMAIL,
+      'pass' : INSTA_PWD
+  }
+  try:
+    response = requests.get(url, headers=headers)
+    session = requests.Session()
+    session.post(url, data=headers)
+
+    soup = BeautifulSoup(response.text, features="html.parser")
+
+    return soup
+
+  except:
+      return None
 
