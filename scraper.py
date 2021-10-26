@@ -327,7 +327,6 @@ def get_url_patterns(url):
     return path_elements
 
 
-
 def get_insta_soup(url):
   headers = {
       'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
@@ -336,10 +335,11 @@ def get_insta_soup(url):
   }
   try:
     response = requests.get(url, headers=headers)
+    print(response)
     session = requests.Session()
     session.post(url, data=headers)
 
-    soup = BeautifulSoup(response.text, features="html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
 
     return soup
 
