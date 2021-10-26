@@ -332,6 +332,7 @@ def get_insta_soup(url):
   try:
     login_instagram()
     response = requests.get(url)
+    print(response.text)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
