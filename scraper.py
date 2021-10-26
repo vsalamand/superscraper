@@ -335,9 +335,10 @@ def get_insta_soup(url):
   }
   try:
     response = requests.get(url, headers=headers)
-    print(response)
     session = requests.Session()
+    print(session)
     session.post(url, data=headers)
+    print(response.text)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
