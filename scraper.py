@@ -28,6 +28,7 @@ INSTA_EMAIL = os.environ.get("INSTA_EMAIL")
 INSTA_PWD = os.environ.get("INSTA_PWD")
 
 
+
 #from nltk.tokenize import sent_tokenize
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 punkt_param = PunktParameters()
@@ -49,21 +50,25 @@ def get_recipe(url: str) -> Optional[List[dict]]:
     """# 1. INSTAGRAM POST"""
     if ("instagram" in urlparse(url).netloc):
 
-      try:
-        insta_soup = get_insta_soup(url)
-        insta_text = json.loads(insta_soup.find("script", type="application/ld+json").string)['caption']
+      # # NOT WORKING IN PRODUCTION
+      # try:
+      #   insta_soup = get_insta_soup(url)
+      #   insta_text = json.loads(insta_soup.find("script", type="application/ld+json").string)['caption']
 
-        """ pre-process text """
-        text = get_processed_text(insta_text)
+      #   """ pre-process text """
+      #   text = get_processed_text(insta_text)
 
-        # get recipe data
-        ingredients = get_ingredients([html.unescape(doc) for doc in text])
-        images = insta_soup.find("meta", property='og:image')['content'].replace("\\u0026","&").split()
+      #   # get recipe data
+      #   ingredients = get_ingredients([html.unescape(doc) for doc in text])
+      #   images = insta_soup.find("meta", property='og:image')['content'].replace("\\u0026","&").split()
 
 
-      except:
-        ingredients = None
-        images = None
+      # except:
+      #   ingredients = None
+      #   images = None
+
+      ingredients = None
+      images = None
 
       """ return recipe dic """
       recipe = {"recipe": {
@@ -331,9 +336,9 @@ def get_url_patterns(url):
 def get_insta_soup(url):
   try:
     login_instagram()
+    # use static url
     response = requests.get(url)
-    print(response.text)
-
+    # NOT WORKING IN PRODUCTION BECAUSE OF HEROKU SERVER IP
     soup = BeautifulSoup(response.text, "html.parser")
 
     return soup
@@ -366,6 +371,7 @@ def login_instagram():
           }
       r = session.post(login_url, data=payload, headers=login_header)
       print(r.status_code)
+
 
 
 
