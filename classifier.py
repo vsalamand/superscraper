@@ -3,19 +3,26 @@ import pandas as pd
 
 from parser import get_matches
 
-from dotenv import load_dotenv
-import os
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+tokenizer = AutoTokenizer.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=True)
+model = AutoModelForSequenceClassification.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=True)
+labels = model.config.id2label
 
-load_dotenv()  # take environment variables from .env.
 
-HF_API_KEY = os.environ.get("HF_API_KEY")
+def get_predictions(inputs):
+  tokenized_inputs = tokenizer(inputs, max_length= 10, padding=True, truncation=True, return_tensors="pt")
 
-API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr_get_ingredient_sentences-18353298"
-headers = {"Authorization": HF_API_KEY}
+  outputs = model(**tokenized_inputs)
 
-def query(payload):
-  response = requests.post(API_URL, headers=headers, json=payload)
-  return response.json()
+  # get outputs tensor
+  probabilities = torch.nn.functional.softmax(outputs.logits, dim=-1)
+  # FIid index of max value in tensor to match with corresponding label
+  predictions = [labels[i] for i in torch.argmax(probabilities, dim=1).tolist()]
+
+  return predictions
+
+
 
 def get_ingredients(text_list):
   try:
@@ -23,21 +30,10 @@ def get_ingredients(text_list):
     inputs = [" ".join(string.lower().split(" ")[:3]) for string in text_list]
 
     # output is a list of list of dic with label and score
-    output = query(inputs)
-    # retry if model is not loaded yet (NOT WORKING)
-    if not isinstance(output, list):
-      print(response.json())
-      time.sleep(20)
-      output = query(inputs)
-
-
-    # extract label predicted for each input
-    preds = []
-    for result in output:
-      preds.append(max(result, key=lambda d: d['score'])['label'])
+    predictions = get_predictions(inputs)
 
     # return list of text inputs that correspond to ingredients
-    df = pd.DataFrame(list(zip(text_list, preds)), columns = ['text', 'preds'])
+    df = pd.DataFrame(list(zip(text_list, predictions)), columns = ['text', 'preds'])
     df_ingredients = df[df["preds"].isin(['1', 'yes'])]
 
     ## remove duplicated ingredients (eg: when instructions are considered like ingredients)
@@ -51,3 +47,29 @@ def get_ingredients(text_list):
   except:
     return None
 
+
+
+
+
+# from dotenv import load_dotenv
+# import os
+
+# load_dotenv()  # take environment variables from .env.
+
+# HF_API_KEY = os.environ.get("HF_API_KEY")
+
+# API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr_get_ingredient_sentences-18353298"
+# headers = {"Authorization": HF_API_KEY}
+
+
+# def query(payload):
+#   response = requests.post(API_URL, headers=headers, json=payload)
+#   print(response.json())
+#   return response.json()
+
+# _____Get outputs in get ingredients USING API ___
+# # output = query(inputs)
+# # extract label predicted for each input
+# preds = []
+# for result in output:
+#   preds.append(max(result, key=lambda d: d['score'])['label'])
