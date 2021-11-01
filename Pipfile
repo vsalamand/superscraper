@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+url = "https://download.pytorch.org/whl/cpu/"
+verify_ssl = false
+name = "pytorch"
+
 [packages]
 pydantic = "*"
 fastapi = "*"
@@ -19,6 +24,7 @@ textblob = "*"
 unidecode = "*"
 frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
 transformers = "*"
+torch = {index = "pytorch", version = "*"}
 
 [dev-packages]
 
