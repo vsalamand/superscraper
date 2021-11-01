@@ -24,7 +24,6 @@ textblob = "*"
 unidecode = "*"
 frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
 transformers = "*"
-torch = {index = "pytorch", version = "*"}
 
 [dev-packages]
 
