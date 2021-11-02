@@ -3,10 +3,17 @@ import pandas as pd
 
 from parser import get_matches
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # take environment variables from .env.
+
+HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
+
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
-tokenizer = AutoTokenizer.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=True)
-model = AutoModelForSequenceClassification.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=True)
+tokenizer = AutoTokenizer.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
+model = AutoModelForSequenceClassification.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
 labels = model.config.id2label
 
 
