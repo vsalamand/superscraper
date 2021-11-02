@@ -19,8 +19,7 @@ textblob = "*"
 unidecode = "*"
 frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
 transformers = "*"
-torch = {version = "==1.6.0", file = "https://download.pytorch.org/whl/cpu/torch-1.6.0-cp38-none-macosx_10_9_x86_64.whl"}
-torchvision = {version = "==0.7.0", file = "https://download.pytorch.org/whl/torchvision-0.7.0-cp38-cp38-macosx_10_9_x86_64.whl"}
+torch = {version = "==1.6.0", file = "https://download.pytorch.org/whl/cpu/torch-1.6.0%2Bcpu-cp38-cp38-linux_x86_64.whl"}
 
 
 [dev-packages]
