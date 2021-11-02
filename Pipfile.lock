@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "92494c1d5e131057489c49f6bf8553f5be724b3e207b929d8abaeb3ce9af5b83"
+            "sha256": "d72420505393df89b276719e64ddeecd5a4969912e4083d02bcd58b17f3ec10a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -144,13 +144,6 @@
         "frenchleffflemmatizer": {
             "git": "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git",
             "ref": "bc0ebd0135a6cc78f48ddf184069b4c0b9c017d8"
-        },
-        "future": {
-            "hashes": [
-                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
-            ],
-            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==0.18.2"
         },
         "h11": {
             "hashes": [
@@ -672,14 +665,6 @@
                 "sha256:edd8cb85c16b4b65e87ea5ef9d400be9fdd53c4152adbaca8817e16dd3aa480b"
             ],
             "version": "==0.10.3"
-        },
-        "torch": {
-            "file": "https://download.pytorch.org/whl/cpu/torch-1.6.0%2Bcpu-cp38-cp38-linux_x86_64.whl",
-            "hashes": [
-                "sha256:d78bdb0762b4821f8bbb25c5bedad9893a519436c80725ee760b204c0db75548"
-            ],
-            "index": "pypi",
-            "version": "==1.6.0"
         },
         "tqdm": {
             "hashes": [

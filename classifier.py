@@ -8,27 +8,15 @@ import os
 
 load_dotenv()  # take environment variables from .env.
 
-HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
+HF_API_KEY = os.environ.get("HF_API_KEY")
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
-tokenizer = AutoTokenizer.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
-model = AutoModelForSequenceClassification.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
-labels = model.config.id2label
+API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr_get_ingredient_sentences-18353298"
+headers = {"Authorization": HF_API_KEY}
 
-
-def get_predictions(inputs):
-  tokenized_inputs = tokenizer(inputs, max_length= 10, padding=True, truncation=True, return_tensors="pt")
-
-  outputs = model(**tokenized_inputs)
-
-  # get outputs tensor
-  probabilities = torch.nn.functional.softmax(outputs.logits, dim=-1)
-  # FIid index of max value in tensor to match with corresponding label
-  predictions = [labels[i] for i in torch.argmax(probabilities, dim=1).tolist()]
-
-  return predictions
-
+# GET PREDICTIONS USING HF INFERENCE API
+def query(payload):
+  response = requests.post(API_URL, headers=headers, json=payload)
+  return response.json()
 
 
 def get_ingredients(text_list):
@@ -36,8 +24,13 @@ def get_ingredients(text_list):
     # use only first N words to limit HF API usage based on characters
     inputs = [" ".join(string.lower().split(" ")[:3]) for string in text_list]
 
-    # output is a list of list of dic with label and score
-    predictions = get_predictions(inputs)
+    # output is a list of list of dic with label and score using HF INFERENCE API
+    outputs = query(inputs)
+
+    # extract label predicted for each input
+    predictions = []
+    for result in outputs:
+      predictions.append(max(result, key=lambda d: d['score'])['label'])
 
     # return list of text inputs that correspond to ingredients
     df = pd.DataFrame(list(zip(text_list, predictions)), columns = ['text', 'preds'])
@@ -58,25 +51,33 @@ def get_ingredients(text_list):
 
 
 
+# #--- HF PYTHON API = NOT WORKING ON HEROKU BECAUSE OF MEMORY LEAK + HARD TO MANAGE SLUG SIZE WITH TORCH ---
+
+
 # from dotenv import load_dotenv
 # import os
 
 # load_dotenv()  # take environment variables from .env.
 
-# HF_API_KEY = os.environ.get("HF_API_KEY")
+# HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
 
-# API_URL = "https://api-inference.huggingface.co/models/vsalamand/autonlp-fr_get_ingredient_sentences-18353298"
-# headers = {"Authorization": HF_API_KEY}
+# from transformers import AutoTokenizer, AutoModelForSequenceClassification
+# import torch
+# tokenizer = AutoTokenizer.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
+# model = AutoModelForSequenceClassification.from_pretrained("vsalamand/autonlp-fr_get_ingredient_sentences-18353298", use_auth_token=HF_API_TOKEN)
+# labels = model.config.id2label
 
 
-# def query(payload):
-#   response = requests.post(API_URL, headers=headers, json=payload)
-#   print(response.json())
-#   return response.json()
+# def get_predictions(inputs):
+#   tokenized_inputs = tokenizer(inputs, max_length= 10, padding=True, truncation=True, return_tensors="pt")
 
-# _____Get outputs in get ingredients USING API ___
-# # output = query(inputs)
-# # extract label predicted for each input
-# preds = []
-# for result in output:
-#   preds.append(max(result, key=lambda d: d['score'])['label'])
+#   outputs = model(**tokenized_inputs)
+
+#   # get outputs tensor
+#   probabilities = torch.nn.functional.softmax(outputs.logits, dim=-1)
+#   # FIid index of max value in tensor to match with corresponding label
+#   predictions = [labels[i] for i in torch.argmax(probabilities, dim=1).tolist()]
+
+#   return predictions
+
+
