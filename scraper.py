@@ -89,7 +89,7 @@ def get_recipe(url: str) -> Optional[List[dict]]:
       if recipe_df is not None:
           recipe = {"recipe": {
                        "name": html.unescape(recipe_df.name.values[0]),
-                       "yield": get_servings(html.unescape(recipe_df.recipeYield.values[0])),
+                       "yield": get_servings(html.unescape(recipe_df.recipeYield.values[0])) if hasattr(recipe_df, 'recipeYield') else None,
                        "ingredients": [html.unescape(el) for el in recipe_df.recipeIngredient.values[0]],
                        "images": get_images(recipe_df)
                       }
