@@ -4,7 +4,9 @@ from pydantic import BaseModel
 
 from scraper import get_recipe
 from grocery_list import get_grocery_list
-from tagger import get_entities
+from tagger import get_tags
+from tokenizer import get_tokens
+
 
 
 app = FastAPI()
@@ -49,5 +51,15 @@ class Items(BaseModel):
 
 @app.post("/scan")
 def scan(ItemsList: Items):
-    return get_entities(ItemsList.items)
+    return get_tags(ItemsList.items)
+
+
+
+# Tokenizer
+
+@app.post("/tokenize")
+def tokenize(ItemsList: Items):
+    return get_tokens(ItemsList.items)
+
+
 
