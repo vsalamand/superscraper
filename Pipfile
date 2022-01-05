@@ -19,6 +19,8 @@ textblob = "*"
 unidecode = "*"
 frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLemmatizer.git"}
 transformers = "*"
+sentencepiece = "*"
+protobuf = "*"
 
 [dev-packages]
 
