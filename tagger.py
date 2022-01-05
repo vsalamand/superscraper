@@ -10,14 +10,17 @@ import os
 
 load_dotenv()  # take environment variables from .env.
 HF_API_KEY = os.environ.get("HF_API_KEY")
-API_URL = "https://api-inference.huggingface.co/models/Jean-Baptiste/camembert-ner"
+# API_URL = "https://api-inference.huggingface.co/models/Jean-Baptiste/camembert-ner"
+API_URL = "https://api-inference.huggingface.co/models/vsalamand/fr_ner_ingredients"
 headers = {"Authorization": HF_API_KEY}
-
 
 
 def get_tags(items):
   tokens = get_tokens(items)
-  entities = query_ner_tagger(items)
+  # Sending multiple queries for each item because querying list of strings is not working, the system is only accepting string input.
+  entities = [query_ner_tagger(item) for item in items]
+  # entities = query_ner_tagger(items)
+  print(entities)
 
   tags = []
 
@@ -37,10 +40,11 @@ def get_tags(items):
 
 def query_ner_tagger(payload):
   try:
-    response = requests.post(API_URL, headers=headers, json=payload)
+    response = requests.post(API_URL, headers=headers, json=payload,)
     return response.json()
   except:
     print(response)
+
 
 
 def enrich(tokens, entities):
