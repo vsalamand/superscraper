@@ -48,6 +48,7 @@ def query_ner_tagger(payload):
 
 
 def enrich(tokens, entities):
+
   for entity in entities:
     token_start = next((sub for sub in tokens if sub['start'] == entity['start']), None)
     token_end = next((sub for sub in tokens if sub['end'] == entity['end']), None)
