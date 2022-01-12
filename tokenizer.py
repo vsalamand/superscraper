@@ -1,15 +1,20 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 import re
+from unidecode import unidecode
+import unicodedata
+
 
 
 tokenizer = AutoTokenizer.from_pretrained('camembert-base')
 
 def get_tokens(docs):
-  outputs = [tokenizer.tokenize(doc) for doc in docs]
+  normalized_docs = [unicodedata.normalize('NFKD',doc) for doc in docs]
+
+  outputs = [tokenizer.tokenize(doc) for doc in normalized_docs]
 
   cleaned_words = clean_outputs(outputs)
 
-  tokens = set_tokens(docs, cleaned_words)
+  tokens = set_tokens(normalized_docs, cleaned_words)
 
   return tokens
 
