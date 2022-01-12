@@ -8,7 +8,7 @@ import unicodedata
 tokenizer = AutoTokenizer.from_pretrained('camembert-base')
 
 def get_tokens(docs):
-  normalized_docs = [unicodedata.normalize('NFC',doc) for doc in docs]
+  normalized_docs = [unicodedata.normalize('NFKC',doc) for doc in docs]
 
   outputs = [tokenizer.tokenize(doc) for doc in normalized_docs]
 
