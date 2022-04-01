@@ -8,9 +8,11 @@ lemmatizer = FrenchLefffLemmatizer()
 import nltk
 from nltk.corpus import stopwords
 import re
-from thefuzz import fuzz
-from thefuzz import process
+
 import unidecode
+
+from rapidfuzz import process, utils, fuzz
+
 
 # get taxonomy from file
 import csv
@@ -26,6 +28,9 @@ def get_vocab(df_category_taxonomy):
     return vocab, clean_categories_lowercase
 
 vocab, clean_categories_lowercase = get_vocab(df_category_taxonomy)
+
+category_list = [x for x in df_category_taxonomy.clean_name.str.lower().to_list() if type(x) == str]
+
 
 # Create units stopowrds
 stopwords = []
@@ -116,18 +121,37 @@ def get_matches(clean_document):
         # find exact matches
         if len(df_category_taxonomy[df_category_taxonomy['clean_name'].str.match(clean_document, na=False)]) > 0:
             return clean_document
+
         else:
+          try:
             # else get 3 top possibilities
-            possibilities = process.extract(clean_document, list(df_category_taxonomy.clean_name), limit=3)
-            # find exact word in clean document
+            possibilities = process.extract(clean_document, category_list, limit=3)
+
+            # find best match
             possible_words = [possible[0] for possible in possibilities if possible[1] > 89]
+            exact_match = [match for match in possible_words if clean_document in match]
+            best_match = [possible[0] for possible in possibilities if possible[1] >= 95]
             top_possibility = [word for word in clean_document.split(' ') if word in possible_words]
+
             # return exact word match
-            if len(top_possibility) > 0:
-                return top_possibility[0]
-            # else return top possiblity
+            if len(exact_match) > 0:
+                return exact_match[0]
+
+            elif len(best_match) > 0:
+                return best_match[0]
+
             else:
-                return possibilities[0][0]
+              if len(top_possibility) > 0:
+                  return top_possibility[0]
+
+              # else return top possiblity
+              elif len(possible_words) > 0:
+                  return possible_words[0]
+
+          except:
+            return
+
+
     else:
         return
 

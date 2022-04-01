@@ -13,7 +13,6 @@ extruct = "*"
 trafilatura = "*"
 nltk = "*"
 python-dotenv = "*"
-thefuzz = "*"
 python-levenshtein = "*"
 textblob = "*"
 unidecode = "*"
@@ -21,6 +20,7 @@ frenchleffflemmatizer = {git = "https://github.com/ClaudeCoulombe/FrenchLefffLem
 transformers = "*"
 sentencepiece = "*"
 protobuf = "*"
+rapidfuzz = "*"
 
 [dev-packages]
 
